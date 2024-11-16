@@ -1,5 +1,4 @@
 import time
-from pprint import pprint
 
 import requests
 import telegram
@@ -19,9 +18,9 @@ def main():
     env = Env()
     env.read_env()
 
-    api_token = env("API_TOKEN")
-    bot_token = env("BOT_TOKEN")
-    chat_id = env("CHAT_ID")
+    api_token = env("DVMN_API_TOKEN")
+    bot_token = env("TG_BOT_TOKEN")
+    chat_id = env("TG_CHAT_ID")
     request_timeout = env.int("REQUEST_TIMEOUT")
 
     bot = telegram.Bot(bot_token)
@@ -35,7 +34,7 @@ def main():
     while True:
         try:
             response = request_attempts(url, header, payload, request_timeout)
-            pprint(response)
+
             if response["status"] == "found":
                 lesson_attempt = response["new_attempts"][0]
                 if lesson_attempt["is_negative"]:
