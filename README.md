@@ -18,13 +18,13 @@ Security sensitive information highly recommended to store in environmental vari
 Example of `.env` file:
 ```
 # Your personal token from Devman API
-API_TOKEN = 0000000x0xxxx0x0x000x000xx0000x00xxx0xx0
+DVMN_API_TOKEN = 0000000x0xxxx0x0x000x000xx0000x00xxx0xx0
 
 # Token of your Telegram bot
-BOT_TOKEN = 1234567890:XXXxx0Xxx-xxxX0xXXxXxx0X0XX0XXXXxXx
+TG_BOT_TOKEN = 1234567890:XXXxx0Xxx-xxxX0xXXxXxx0X0XX0XXXXxXx
 
 # Telegram chat ID of the message receiver
-CHAT_ID = 000000000
+TG_CHAT_ID = 000000000
 
 # Time in seconds which request will wait for server response.
 # Have to be greater then server response timeout.
