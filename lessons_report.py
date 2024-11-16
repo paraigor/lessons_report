@@ -57,11 +57,10 @@ def main():
                 or lesson_attempt["timestamp"]
             }
 
-        except requests.exceptions.ReadTimeout:
-            exit(
-                "Server response timeout have changed, update 'REQUEST_TIMEOUT' setting."
-            )
-        except requests.exceptions.ConnectionError:
+        except (
+            requests.exceptions.ReadTimeout,
+            requests.exceptions.ConnectionError,
+        ):
             continue
 
 
