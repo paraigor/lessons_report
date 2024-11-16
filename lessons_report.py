@@ -1,4 +1,5 @@
 import time
+from pprint import pprint
 
 import requests
 import telegram
@@ -34,7 +35,7 @@ def main():
     while True:
         try:
             response = request_attempts(url, header, payload, request_timeout)
-
+            pprint(response)
             if response["status"] == "found":
                 lesson_attempt = response["new_attempts"][0]
                 if lesson_attempt["is_negative"]:
@@ -49,17 +50,17 @@ def main():
                     {attempt_result}
                     """
 
-                bot.send_message(
-                    chat_id=chat_id, text=message
-                )
+                bot.send_message(chat_id=chat_id, text=message)
 
-                payload = {"timestamp": lesson_attempt["timestamp"]}
-                continue
-            else:
-                payload = {"timestamp": response["timestamp_to_request"]}
-                continue
+            payload = {
+                "timestamp": response.get("timestamp_to_request")
+                or lesson_attempt["timestamp"]
+            }
+
         except requests.exceptions.ReadTimeout:
-            exit("Server response timeout have changed, update 'REQUEST_TIMEOUT' setting.")
+            exit(
+                "Server response timeout have changed, update 'REQUEST_TIMEOUT' setting."
+            )
         except requests.exceptions.ConnectionError:
             continue
 
