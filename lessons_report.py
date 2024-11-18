@@ -37,16 +37,15 @@ def main():
 
             if response["status"] == "found":
                 lesson_attempt = response["new_attempts"][0]
-                if lesson_attempt["is_negative"]:
-                    attempt_result = "К сожалению, в работе нашлись ошибки."
-                else:
-                    attempt_result = "Преподавателю все понравилось, можно приступать к следующему уроку!"
-
+                attempt_result = {
+                    True: "Преподавателю все понравилось, можно приступать к следующему уроку!",
+                    False: "К сожалению, в работе нашлись ошибки.",
+                }
                 message = f"""
                     У вас проверили работу «{lesson_attempt["lesson_title"]}»
                     {lesson_attempt["lesson_url"]}
 
-                    {attempt_result}
+                    {attempt_result[lesson_attempt["is_negative"]]}
                     """
 
                 bot.send_message(chat_id=chat_id, text=message)
