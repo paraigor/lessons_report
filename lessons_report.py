@@ -1,8 +1,15 @@
+import logging
 import time
 
 import requests
 import telegram
 from environs import Env
+
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
 
 
 def request_attempts(url, headers, params, timeout):
@@ -15,6 +22,8 @@ def request_attempts(url, headers, params, timeout):
 
 
 def main():
+    logger.info("Бот запущен")
+
     env = Env()
     env.read_env()
 
