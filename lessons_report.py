@@ -47,25 +47,31 @@ def main():
         try:
             response = request_attempts(url, header, payload, request_timeout)
 
-            if response["status"] == "found":
-                lesson_attempt = response["new_attempts"][0]
-                attempt_result = {
-                    True: "Преподавателю все понравилось, можно приступать к следующему уроку!",
-                    False: "К сожалению, в работе нашлись ошибки.",
-                }
-                message = f"""
-                    У вас проверили работу «{lesson_attempt["lesson_title"]}»
-                    {lesson_attempt["lesson_url"]}
+            try:
+                0/0
+            except Exception as err:
+                logger.error("Бот словил ошибку:")
+                logger.exception(err)
 
-                    {attempt_result[lesson_attempt["is_negative"]]}
-                    """
+            # if response["status"] == "found":
+            #     lesson_attempt = response["new_attempts"][0]
+            #     attempt_result = {
+            #         True: "Преподавателю все понравилось, можно приступать к следующему уроку!",
+            #         False: "К сожалению, в работе нашлись ошибки.",
+            #     }
+            #     message = f"""
+            #         У вас проверили работу «{lesson_attempt["lesson_title"]}»
+            #         {lesson_attempt["lesson_url"]}
 
-                bot.send_message(chat_id=chat_id, text=message)
+            #         {attempt_result[lesson_attempt["is_negative"]]}
+            #         """
 
-            payload = {
-                "timestamp": response.get("timestamp_to_request")
-                or lesson_attempt["timestamp"]
-            }
+            #     bot.send_message(chat_id=chat_id, text=message)
+
+            # payload = {
+            #     "timestamp": response.get("timestamp_to_request")
+            #     or lesson_attempt["timestamp"]
+            # }
 
         except (
             requests.exceptions.ReadTimeout,
