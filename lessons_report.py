@@ -32,7 +32,7 @@ def request_attempts(url, headers, params, timeout):
 def main():
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(message)s",
-        level=logging.DEBUG,
+        level=logging.INFO,
     )
     logger.addHandler(TgLogHandler(bot, chat_id))
     logger.info("Бот запущен")
@@ -47,37 +47,32 @@ def main():
         try:
             response = request_attempts(url, header, payload, request_timeout)
 
-            try:
-                0/0
-            except Exception as err:
-                logger.error("Бот словил ошибку:")
-                logger.exception(err)
+            if response["status"] == "found":
+                lesson_attempt = response["new_attempts"][0]
+                attempt_result = {
+                    True: "Преподавателю все понравилось, можно приступать к следующему уроку!",
+                    False: "К сожалению, в работе нашлись ошибки.",
+                }
+                message = f"""
+                    У вас проверили работу «{lesson_attempt["lesson_title"]}»
+                    {lesson_attempt["lesson_url"]}
 
-            # if response["status"] == "found":
-            #     lesson_attempt = response["new_attempts"][0]
-            #     attempt_result = {
-            #         True: "Преподавателю все понравилось, можно приступать к следующему уроку!",
-            #         False: "К сожалению, в работе нашлись ошибки.",
-            #     }
-            #     message = f"""
-            #         У вас проверили работу «{lesson_attempt["lesson_title"]}»
-            #         {lesson_attempt["lesson_url"]}
+                    {attempt_result[lesson_attempt["is_negative"]]}
+                    """
 
-            #         {attempt_result[lesson_attempt["is_negative"]]}
-            #         """
+                bot.send_message(chat_id=chat_id, text=message)
 
-            #     bot.send_message(chat_id=chat_id, text=message)
-
-            # payload = {
-            #     "timestamp": response.get("timestamp_to_request")
-            #     or lesson_attempt["timestamp"]
-            # }
+            payload = {
+                "timestamp": response.get("timestamp_to_request")
+                or lesson_attempt["timestamp"]
+            }
 
         except (
             requests.exceptions.ReadTimeout,
             requests.exceptions.ConnectionError,
-        ):
-            continue
+        ) as err:
+            logger.info("Бот упал с ошибкой:")
+            logger.error(err)
 
 
 if __name__ == "__main__":
