@@ -5,11 +5,19 @@ import requests
 import telegram
 from environs import Env
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG,
-)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
+
+
+class TgLogHandler(logging.Handler):
+
+    def __init__(self, tg_bot, chat_id):
+        super().__init__()
+        self.chat_id = chat_id
+        self.tg_bot = tg_bot
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
 def request_attempts(url, headers, params, timeout):
@@ -22,17 +30,12 @@ def request_attempts(url, headers, params, timeout):
 
 
 def main():
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        level=logging.DEBUG,
+    )
+    logger.addHandler(TgLogHandler(bot, chat_id))
     logger.info("Бот запущен")
-
-    env = Env()
-    env.read_env()
-
-    api_token = env("DVMN_API_TOKEN")
-    bot_token = env("TG_BOT_TOKEN")
-    chat_id = env("TG_CHAT_ID")
-    request_timeout = env.int("REQUEST_TIMEOUT")
-
-    bot = telegram.Bot(bot_token)
 
     header = {"Authorization": f"Token {api_token}"}
     url = "https://dvmn.org/api/long_polling/"
@@ -72,4 +75,13 @@ def main():
 
 
 if __name__ == "__main__":
+    env = Env()
+    env.read_env()
+
+    api_token = env("DVMN_API_TOKEN")
+    bot_token = env("TG_BOT_TOKEN")
+    chat_id = env("TG_CHAT_ID")
+    request_timeout = env.int("REQUEST_TIMEOUT")
+
+    bot = telegram.Bot(bot_token)
     main()
